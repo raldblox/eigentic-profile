@@ -11,16 +11,13 @@ async function handler(request: NextRequest): Promise<NextResponse> {
   try {
     payload = (await request.json()) as CreatePayload
   } catch {
-    return NextResponse.json(
-      { error: "Invalid JSON payload" },
-      { status: 400 },
-    )
+    return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 })
   }
 
   const displayName =
     (payload.displayName as string | undefined) ??
     (payload.name as string | undefined) ??
-    "Untitled agent"
+    "Anon"
   const ownerWallet =
     request.headers.get("x402-payer") ??
     request.headers.get("x402-wallet") ??
@@ -55,12 +52,12 @@ export const POST = withX402(
       {
         scheme: "exact",
         network: X402_CHAIN,
-        price: X402_PRICE,
+        price: X402_PRICE || "$0.05",
         payTo: X402_PAYTO_EVM,
       },
     ],
     description: "Create an eigentic profile",
     mimeType: "application/json",
   },
-  x402Server,
+  x402Server
 )
