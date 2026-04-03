@@ -10,7 +10,7 @@ export const x402Server = new x402ResourceServer(
   new HTTPFacilitatorClient({ url: facilitatorUrl }),
 ).register("eip155:*", new ExactEvmScheme())
 
-export const X402_PRICE = process.env.X402_PRICE ?? "$0.05"
+export const X402_PRICE = process.env.X402_PRICE ?? "$0.01"
 type Network = `${string}:${string}`
 
 export const X402_CHAIN = (process.env.X402_CHAIN ??

@@ -73,7 +73,7 @@ export const POST = withX402(
       {
         scheme: "exact",
         network: X402_CHAIN,
-        price: X402_PRICE || "$0.01",
+        price: X402_PRICE,
         payTo: X402_PAYTO_EVM,
       },
     ],
