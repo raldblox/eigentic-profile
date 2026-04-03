@@ -12,7 +12,7 @@ export default function DemoProfilePage() {
     <main className="flex h-svh w-screen overflow-hidden bg-background">
       {/* Scenario Sidebar */}
       <aside className="hidden lg:flex w-80 flex-col border-r border-border bg-muted/20 overflow-y-auto">
-        <div className="p-6 border-b border-border">
+        <div className="p-6">
           <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground/60 mb-1">
             Demo Scenarios
           </div>
