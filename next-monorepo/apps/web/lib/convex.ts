@@ -15,7 +15,7 @@ export function getConvexClientWithDebug(debugHttp: boolean) {
   const client = new ConvexHttpClient(url, {
     fetch: async (input, init) => {
       const response = await fetch(input, init)
-      if (debugHttp && !response.ok) {
+      if (debugHttp) {
         const cloned = response.clone()
         const body = await cloned.text()
         const requestUrl =
@@ -28,6 +28,7 @@ export function getConvexClientWithDebug(debugHttp: boolean) {
           url: requestUrl,
           status: response.status,
           statusText: response.statusText,
+          ok: response.ok,
           body,
         })
       }
