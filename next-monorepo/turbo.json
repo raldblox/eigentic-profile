@@ -5,6 +5,18 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "env": [
+        "CONVEX_DEPLOY_KEY",
+        "CONVEX_URL",
+        "CONVEX_SITE_URL",
+        "DEBUG_API_ERRORS",
+        "OPENAI_API_KEY",
+        "OPENAI_MODEL",
+        "X402_CHAIN",
+        "X402_FACILITATOR_URL",
+        "X402_PAYTO_EVM",
+        "X402_PRICE"
+      ],
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {
