@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
 import { api, getConvexClient } from "@/lib/convex"
 import { getOpenAIClient, OPENAI_MODEL } from "@/lib/openai"
@@ -14,9 +14,10 @@ type ChatRequest = {
 }
 
 export async function POST(
-  request: Request,
-  { params }: { params: { id: string } },
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params
   let payload: ChatRequest
   try {
     payload = (await request.json()) as ChatRequest
@@ -33,7 +34,7 @@ export async function POST(
 
   const client = getConvexClient()
   const profile = await client.query(api.profiles.get, {
-    id: params.id as Id<"profiles">,
+    id: id as Id<"profiles">,
   })
 
   if (!profile) {

@@ -3,6 +3,16 @@
 import { useMemo, useState } from "react"
 
 import { Button } from "@workspace/ui/components/button"
+import {
+  ChatContainerContent,
+  ChatContainerRoot,
+  ChatContainerScrollAnchor,
+} from "@workspace/ui/components/chat-container"
+import {
+  PromptInput,
+  PromptInputActions,
+  PromptInputTextarea,
+} from "@workspace/ui/components/prompt-input"
 
 type ChatMessage = {
   id: string
@@ -128,7 +138,7 @@ export function ProfileChat({
             <h2 className="text-lg font-semibold">{profile.displayName}</h2>
           </div>
         </div>
-        <div className="text-xs text-muted-foreground">x402 • qualified</div>
+        <div className="text-xs text-muted-foreground">x402 | qualified</div>
       </div>
 
       <div className="px-6 pt-4">
@@ -138,48 +148,47 @@ export function ProfileChat({
       </div>
 
       <div className="px-6 pb-6 pt-4">
-        <div className="flex min-h-[320px] flex-col gap-4 rounded-2xl border border-border bg-background p-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`max-w-[80%] rounded-2xl border border-border px-4 py-3 text-sm leading-relaxed ${
-                message.role === "user"
-                  ? "self-end bg-muted text-foreground"
-                  : "self-start bg-card text-foreground"
-              }`}
-            >
-              {message.content}
-            </div>
-          ))}
-          {busy && (
-            <div className="text-xs text-muted-foreground">Thinking...</div>
-          )}
-        </div>
+        <ChatContainerRoot className="min-h-[320px] rounded-2xl border border-border bg-background p-4">
+          <ChatContainerContent className="gap-4">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`max-w-[80%] rounded-2xl border border-border px-4 py-3 text-sm leading-relaxed ${
+                  message.role === "user"
+                    ? "self-end bg-muted text-foreground"
+                    : "self-start bg-card text-foreground"
+                }`}
+              >
+                {message.content}
+              </div>
+            ))}
+            {busy && (
+              <div className="text-xs text-muted-foreground">Thinking...</div>
+            )}
+            <ChatContainerScrollAnchor />
+          </ChatContainerContent>
+        </ChatContainerRoot>
       </div>
 
       <div className="border-t border-border px-6 py-4">
         <div className="flex flex-col gap-3">
-          <textarea
+          <PromptInput
             value={input}
-            onChange={(event) => setInput(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault()
-                void onSend()
-              }
-            }}
-            rows={3}
-            placeholder="Explain your intent, proof, and why you qualify."
-            className="w-full resize-none rounded-2xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
-          />
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <Button onClick={onSend} disabled={!canSend}>
-              {busy ? "Reviewing..." : "Send qualification"}
-            </Button>
-            <span className="text-xs text-muted-foreground">
-              The agent will only reveal the next step when you qualify.
-            </span>
-          </div>
+            onValueChange={setInput}
+            onSubmit={onSend}
+            isLoading={busy}
+            className="rounded-2xl border border-border bg-background px-4 py-2"
+          >
+            <PromptInputTextarea placeholder="Explain your intent, proof, and why you qualify." />
+            <PromptInputActions className="justify-between pt-2">
+              <span className="text-xs text-muted-foreground">
+                The agent only reveals the next step when you qualify.
+              </span>
+              <Button onClick={onSend} disabled={!canSend}>
+                {busy ? "Reviewing..." : "Send"}
+              </Button>
+            </PromptInputActions>
+          </PromptInput>
         </div>
       </div>
     </div>

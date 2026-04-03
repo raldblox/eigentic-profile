@@ -1,15 +1,16 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
 import { api, getConvexClient } from "@/lib/convex"
 import type { Id } from "@convex/_generated/dataModel"
 
 export async function GET(
-  _request: Request,
-  { params }: { params: { id: string } },
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params
   const client = getConvexClient()
   const profile = await client.query(api.profiles.get, {
-    id: params.id as Id<"profiles">,
+    id: id as Id<"profiles">,
   })
 
   if (!profile) {
