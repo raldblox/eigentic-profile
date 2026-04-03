@@ -236,11 +236,11 @@ export function ProfileChat({
             onValueChange={setInput}
             onSubmit={onSend}
             isLoading={busy}
-            className="group relative flex flex-col space-y-2 rounded-2xl border border-input bg-background p-2 pr-12 focus-within:ring-1 focus-within:ring-ring transition-all"
+            className="group relative flex flex-col space-y-2 rounded-2xl border border-input p-2 pr-12 focus-within:ring-1 focus-within:ring-ring transition-all"
           >
             <PromptInputTextarea
               placeholder="Ask anything or provide your qualifications..."
-              className="px-2 py-1"
+              className="px-2 py-1 bg-transparent!"
             />
             <div className="absolute right-3 bottom-3">
                <Button
