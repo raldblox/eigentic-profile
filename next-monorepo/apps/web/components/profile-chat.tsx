@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { cn } from "@workspace/ui/lib/utils"
 
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -130,82 +131,146 @@ export function ProfileChat({
   }
 
   return (
-    <div className="rounded-3xl border border-border bg-card">
-      <div className="flex items-center justify-between border-b border-border px-6 py-4">
+    <div className="flex flex-col h-full max-h-screen">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-10">
         <div className="flex items-center gap-3">
-          <span className="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+          <span className="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
           <div>
-            <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              Profile Agent
+            <h2 className="text-sm font-medium">{profile.displayName}</h2>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              Profile Agent • Online
             </div>
-            <h2 className="text-lg font-semibold">{profile.displayName}</h2>
           </div>
         </div>
-        <div className="text-xs text-muted-foreground">x402 | qualified</div>
+        <div className="flex items-center gap-2">
+          {scenario && (
+             <span className="hidden sm:inline-flex rounded-full border border-border px-2 py-0.5 text-[9px] uppercase tracking-wider text-muted-foreground">
+               {scenario.title}
+             </span>
+          )}
+          <div className="text-[10px] text-muted-foreground font-mono">x402:v2</div>
+        </div>
       </div>
 
-      <div className="px-6 pt-4">
-        {profile.headline && (
-          <p className="text-sm text-muted-foreground">{profile.headline}</p>
-        )}
-        {scenario && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            <span className="rounded-full border border-border px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              {scenario.title}
-            </span>
-            {Object.keys(scenario.gatedAssets).map((asset) => (
-              <span
-                key={asset}
-                className="rounded-full border border-border px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
-              >
-                {asset}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* Hero / Context (Optional, could be moved to sidebar or top of chat) */}
+      {/* For ChatGPT style, we usually have a clean start. I'll put headline at the very top of messages or in the header. */}
 
-      <div className="px-6 pb-6 pt-4">
-        <ChatContainerRoot className="min-h-[320px] rounded-2xl border border-border bg-background p-4">
-          <ChatContainerContent className="gap-4">
+      {/* Chat Messages */}
+      <ChatContainerRoot className="flex-1 px-4 py-8 md:px-0">
+        <div className="mx-auto max-w-3xl w-full">
+          <ChatContainerContent className="gap-8">
+            {/* Initial Welcome / Profile Info */}
+            <div className="mb-4 px-4 py-6 rounded-2xl bg-muted/30 border border-border/50">
+              <h1 className="text-2xl font-semibold mb-2">{profile.displayName}</h1>
+              {profile.headline && (
+                <p className="text-muted-foreground text-sm leading-relaxed max-w-2xl">
+                  {profile.headline}
+                </p>
+              )}
+              {scenario && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {Object.keys(scenario.gatedAssets).map((asset) => (
+                    <span
+                      key={asset}
+                      className="rounded-full bg-background border border-border px-2.5 py-1 text-[10px] font-medium text-foreground/70"
+                    >
+                      {asset}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`max-w-[80%] rounded-2xl border border-border px-4 py-3 text-sm leading-relaxed ${
-                  message.role === "user"
-                    ? "self-end bg-muted text-foreground"
-                    : "self-start bg-card text-foreground"
-                }`}
+                className={cn(
+                  "flex w-full gap-4 px-4",
+                  message.role === "user" ? "flex-row-reverse" : "flex-row"
+                )}
               >
-                {message.content}
+                <div className={cn(
+                  "flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full border text-[10px] font-bold uppercase",
+                  message.role === "assistant"
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-muted text-muted-foreground border-border"
+                )}>
+                  {message.role === "assistant" ? "AI" : "ME"}
+                </div>
+                <div className={cn(
+                  "flex flex-col gap-2 max-w-[85%] sm:max-w-[75%]",
+                  message.role === "user" ? "items-end" : "items-start"
+                )}>
+                  <div className={cn(
+                    "rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm",
+                    message.role === "user"
+                      ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900"
+                      : "bg-background border border-border text-foreground"
+                  )}>
+                    {message.content}
+                  </div>
+                </div>
               </div>
             ))}
             {busy && (
-              <div className="text-xs text-muted-foreground">Thinking...</div>
+              <div className="flex gap-4 px-4">
+                <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold border border-primary">
+                  AI
+                </div>
+                <div className="text-xs text-muted-foreground italic flex items-center min-h-[32px]">
+                  <span>Generating response...</span>
+                </div>
+              </div>
             )}
             <ChatContainerScrollAnchor />
           </ChatContainerContent>
-        </ChatContainerRoot>
-      </div>
+        </div>
+      </ChatContainerRoot>
 
-      <div className="border-t border-border px-6 py-4">
-        <div className="flex flex-col gap-3">
+      {/* Input Area */}
+      <div className="w-full bg-gradient-to-t from-background via-background/90 to-transparent pt-10 pb-6 sticky bottom-0">
+        <div className="mx-auto max-w-3xl w-full px-4">
           <PromptInput
             value={input}
             onValueChange={setInput}
             onSubmit={onSend}
             isLoading={busy}
-            className="rounded-2xl border border-border bg-background px-4 py-2"
+            className="group relative flex flex-col space-y-2 rounded-2xl border border-input bg-background p-2 pr-12 focus-within:ring-1 focus-within:ring-ring transition-all"
           >
-            <PromptInputTextarea placeholder="Explain your intent, proof, and why you qualify." />
-            <PromptInputActions className="justify-between pt-2">
-              <span className="text-xs text-muted-foreground">
-                The agent only reveals the next step when you qualify.
-              </span>
-              <Button onClick={onSend} disabled={!canSend}>
-                {busy ? "Reviewing..." : "Send"}
+            <PromptInputTextarea
+              placeholder="Ask anything or provide your qualifications..."
+              className="px-2 py-1"
+            />
+            <div className="absolute right-3 bottom-3">
+               <Button
+                onClick={onSend}
+                disabled={!canSend}
+                size="icon"
+                className="h-8 w-8 rounded-xl"
+              >
+                {busy ? (
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-4 w-4"
+                  >
+                    <path d="m5 12 7-7 7 7" />
+                    <path d="M12 19V5" />
+                  </svg>
+                )}
               </Button>
-            </PromptInputActions>
+            </div>
+            <div className="text-[10px] text-center text-muted-foreground/60 w-full pt-1">
+              Eigentic Agent can reveal gated info, calendar, or email upon qualification.
+            </div>
           </PromptInput>
         </div>
       </div>
