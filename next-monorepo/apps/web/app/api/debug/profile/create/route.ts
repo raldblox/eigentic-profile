@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
 import util from "node:util"
 
-import { anyApi, getConvexClient } from "@/lib/convex"
+import { api, getConvexClient } from "@/lib/convex"
 
 type CreatePayload = Record<string, unknown>
+
+function normalizeCriteria(criteria: unknown): string[] | undefined {
+  if (!Array.isArray(criteria)) return undefined
+  const values = criteria.filter((value): value is string => typeof value === "string")
+  return values.length ? values : undefined
+}
 
 function buildDiagnostics({
   payload,
@@ -72,7 +78,7 @@ export async function POST(request: NextRequest) {
 
   const client = getConvexClient()
   try {
-    const id = (await client.mutation((anyApi as any).profiles.create, {
+    const id = (await client.mutation(api.profiles.create, {
       displayName,
       ownerWallet,
       ownerLabel,
@@ -81,7 +87,7 @@ export async function POST(request: NextRequest) {
       qualificationGoal: payload.qualificationGoal,
       intent: payload.intent,
       context: payload.context,
-      criteria: payload.criteria,
+      criteria: normalizeCriteria(payload.criteria),
       gatedAssets: payload.gatedAssets,
       accessRules: payload.accessRules,
       structuredData: payload.structuredData ?? payload.profile,

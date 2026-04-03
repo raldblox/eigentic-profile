@@ -2,10 +2,17 @@ import { NextRequest, NextResponse } from "next/server"
 import util from "node:util"
 import { withX402 } from "@x402/next"
 
-import { anyApi, getConvexClient } from "@/lib/convex"
+import { api, getConvexClient } from "@/lib/convex"
 import { X402_CHAIN, X402_PAYTO_EVM, X402_PRICE, x402Server } from "@/lib/x402"
 
 type CreatePayload = Record<string, unknown>
+
+function normalizeCriteria(criteria: unknown): string[] | undefined {
+  if (!Array.isArray(criteria)) return undefined
+  const values = criteria.filter((value): value is string => typeof value === "string")
+  return values.length ? values : undefined
+}
+
 const X402_DEV_BYPASS = process.env.X402_DEV_BYPASS === "true"
 const DEBUG_API_ERRORS =
   process.env.DEBUG_API_ERRORS === "true" ||
@@ -85,7 +92,7 @@ async function handler(request: NextRequest): Promise<NextResponse> {
 
   let id: string
   try {
-    id = (await client.mutation((anyApi as any).profiles.create, {
+    id = (await client.mutation(api.profiles.create, {
       displayName,
       ownerWallet,
       ownerLabel,
@@ -94,11 +101,11 @@ async function handler(request: NextRequest): Promise<NextResponse> {
       qualificationGoal: payload.qualificationGoal,
       intent: payload.intent,
       context: payload.context,
-      criteria: payload.criteria,
+      criteria: normalizeCriteria(payload.criteria),
       gatedAssets: payload.gatedAssets,
       accessRules: payload.accessRules,
       structuredData: payload.structuredData ?? payload.profile,
-      })) as string
+    })) as string
   } catch (error) {
     const ownKeys =
       error && typeof error === "object"

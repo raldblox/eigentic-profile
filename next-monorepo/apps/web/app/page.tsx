@@ -6,7 +6,7 @@ import { demoScenarios } from "@/lib/demo-scenarios"
 export default function Page() {
   return (
     <main className="min-h-dvh bg-background px-6 py-10">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-16">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-16">
         <nav className="flex items-center justify-between text-sm">
           <div className="font-semibold">eigentic-profile</div>
           <a
@@ -17,19 +17,17 @@ export default function Page() {
           </a>
         </nav>
 
-        <section className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+        <section className="grid gap-24 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div className="flex flex-col gap-6">
             <div className="w-fit rounded-full border border-border px-4 py-1.5 text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
               OWS Hackathon
             </div>
             <div className="flex flex-col gap-4">
-              <h1 className="text-4xl font-semibold leading-tight md:text-5xl">
-                Pay-to-create profiles that qualify before they unlock access.
+              <h1 className="text-3xl font-semibold leading-tight md:text-4xl">
+                Profiles that qualify visitors before they unlock access
               </h1>
               <p className="max-w-xl text-base text-muted-foreground md:text-lg">
-                Submit one paid request to mint a public profile. The embedded
-                representative qualifies visitors, protects sensitive contact
-                details, and only opens the next step when the fit is clear.
+                Create a profile with an embedded AI representative that screens visitors before revealing private links like email, calendars, or application forms. Only the right people get through.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -43,8 +41,7 @@ export default function Page() {
               </Button>
             </div>
             <div className="text-xs text-muted-foreground">
-              Built for judges, founders, and agents that need access control,
-              not another static profile page.
+              Built for anyone who needs signal before access.
             </div>
           </div>
 
@@ -59,7 +56,7 @@ export default function Page() {
             </div>
             <div className="mt-6 rounded-2xl border border-border bg-background px-4 py-5 text-xs leading-relaxed">
               <pre className="whitespace-pre-wrap text-[11px] leading-relaxed text-foreground">
-{`ows pay request "https://eigentic-profile.vercel.app/api/profile/create" \\
+                {`ows pay request "https://eigentic-profile.vercel.app/api/profile/create" \\
   --wallet eigentti \\
   --method POST \\
   --body '{
@@ -89,7 +86,7 @@ export default function Page() {
           </div>
         </section>
 
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        {/* <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
           {demoScenarios.map((scenario) => (
             <article
               key={scenario.id}
@@ -109,7 +106,7 @@ export default function Page() {
               </div>
             </article>
           ))}
-        </section>
+        </section> */}
       </div>
     </main>
   )
