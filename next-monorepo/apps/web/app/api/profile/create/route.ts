@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import util from "node:util"
 import { withX402 } from "@x402/next"
 
 import { anyApi, getConvexClient } from "@/lib/convex"
@@ -99,10 +100,24 @@ async function handler(request: NextRequest): Promise<NextResponse> {
       structuredData: payload.structuredData ?? payload.profile,
       })) as string
   } catch (error) {
+    const ownKeys =
+      error && typeof error === "object"
+        ? Reflect.ownKeys(error).map((key) => String(key))
+        : []
+    const fullInspect =
+      error && typeof error === "object"
+        ? util.inspect(error, { depth: 5, breakLength: 120, showHidden: true })
+        : String(error)
     const errorDetails = {
       name: error instanceof Error ? error.name : undefined,
       message: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
+      constructorName:
+        error && typeof error === "object" && "constructor" in error
+          ? (error as { constructor?: { name?: string } }).constructor?.name
+          : undefined,
+      ownKeys,
+      inspect: fullInspect,
       data:
         typeof error === "object" && error !== null
           ? (error as { data?: unknown }).data
