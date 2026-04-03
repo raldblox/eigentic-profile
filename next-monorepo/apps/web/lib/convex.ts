@@ -44,6 +44,8 @@ type ConvexMutationResponse =
   | { status: "success"; value: JSONValue }
   | { status: "error"; errorMessage: string; errorData?: JSONValue }
 
+type ConvexQueryResponse = ConvexMutationResponse
+
 export async function runConvexMutation<T>(
   path: string,
   args: Record<string, unknown>,
@@ -85,6 +87,53 @@ export async function runConvexMutation<T>(
   }
 
   const payload = (await response.json()) as ConvexMutationResponse
+  if (payload.status === "error") {
+    throw new Error(payload.errorMessage)
+  }
+  return jsonToConvex(payload.value) as T
+}
+
+export async function runConvexQuery<T>(
+  path: string,
+  args: Record<string, unknown>,
+  opts?: { debugHttp?: boolean },
+): Promise<T> {
+  const url = process.env.CONVEX_URL
+  if (!url) {
+    throw new Error("Missing CONVEX_URL in environment")
+  }
+
+  const body = JSON.stringify({
+    path,
+    format: "convex_encoded_json",
+    args: [convexToJson(args as never)],
+  })
+
+  const response = await fetch(`${url}/api/query`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Convex-Client": `npm-${version}`,
+    },
+    body,
+  })
+
+  if (opts?.debugHttp) {
+    const responseText = await response.clone().text()
+    console.error("Raw Convex query response", {
+      url: `${url}/api/query`,
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+      body: responseText,
+    })
+  }
+
+  if (!response.ok) {
+    throw new Error(await response.text())
+  }
+
+  const payload = (await response.json()) as ConvexQueryResponse
   if (payload.status === "error") {
     throw new Error(payload.errorMessage)
   }

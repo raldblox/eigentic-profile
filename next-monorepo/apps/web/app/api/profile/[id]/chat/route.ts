@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 
-import { anyApi, getConvexClient } from "@/lib/convex"
+import type { ProfileDoc } from "@/components/profile-detail"
+import { runConvexQuery } from "@/lib/convex"
 import { getOpenAIClient, OPENAI_MODEL } from "@/lib/openai"
 import { buildQualificationPrompt } from "@/lib/qualification-prompt"
 
@@ -32,8 +33,7 @@ export async function POST(
     )
   }
 
-  const client = getConvexClient()
-  const profile = await client.query((anyApi as any).profiles.get, {
+  const profile = await runConvexQuery<ProfileDoc | null>("profiles:get", {
     id,
   })
 
