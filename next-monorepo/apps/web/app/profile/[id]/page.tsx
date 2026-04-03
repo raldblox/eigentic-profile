@@ -8,10 +8,11 @@ export const dynamic = "force-dynamic"
 export default async function ProfilePage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   const profile = (await runConvexQuery<ProfileDoc | null>("profiles:get", {
-    id: params.id,
+    id,
   })) as ProfileDoc | null
 
   if (!profile) {
