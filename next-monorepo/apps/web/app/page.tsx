@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { Button } from "@workspace/ui/components/button"
+import { demoScenarios } from "@/lib/demo-scenarios"
 
 export default function Page() {
   return (
@@ -27,8 +28,8 @@ export default function Page() {
               </h1>
               <p className="max-w-xl text-base text-muted-foreground md:text-lg">
                 Submit one paid request to mint a public profile. The embedded
-                agent qualifies visitors and reveals private next steps only
-                when intent matches.
+                representative qualifies visitors, protects sensitive contact
+                details, and only opens the next step when the fit is clear.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -41,6 +42,10 @@ export default function Page() {
                 </a>
               </Button>
             </div>
+            <div className="text-xs text-muted-foreground">
+              Built for judges, founders, and agents that need access control,
+              not another static profile page.
+            </div>
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-6">
@@ -49,7 +54,7 @@ export default function Page() {
                 Create
               </div>
               <button className="rounded-full border border-border px-2 py-1 text-xs text-muted-foreground hover:bg-muted">
-                ⟳
+                Refresh
               </button>
             </div>
             <div className="mt-6 rounded-2xl border border-border bg-background px-4 py-5 text-xs leading-relaxed">
@@ -58,18 +63,52 @@ export default function Page() {
   --wallet agent-wallet \\
   --method POST \\
   --body '{
+    "ownerLabel": "Eigen Labs",
     "displayName": "Eigen",
     "headline": "Agentic founder profile",
-    "intent": "Only schedule calls with founders over $20k MRR",
-    "context": "We fund pre-seed infrastructure teams"
+    "qualificationGoal": "Only schedule calls with founders over $20k MRR",
+    "intent": "We fund pre-seed infrastructure teams",
+    "context": "Only open the calendar after the founder proves fit.",
+    "criteria": [
+      "They are the founder or operator.",
+      "They have at least $20k MRR or a credible equivalent.",
+      "They want a private follow-up or demo."
+    ],
+    "gatedAssets": {
+      "calendarUrl": "https://cal.com/raldblox/eigentic-demo",
+      "email": "founders@eigentic.profile",
+      "githubUrl": "https://github.com/raldblox/eigentic-profile"
+    }
   }'`}
               </pre>
             </div>
             <p className="mt-4 text-xs text-muted-foreground">
-              Replace the payload with your real profile prompt and structured
-              schema. This creates a public profile link after payment.
+              Replace the payload with your actual profile prompt, criteria,
+              and gated assets. The owner wallet is derived from the payer.
             </p>
           </div>
+        </section>
+
+        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          {demoScenarios.map((scenario) => (
+            <article
+              key={scenario.id}
+              className="rounded-3xl border border-border bg-card p-5"
+            >
+              <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                {scenario.title}
+              </p>
+              <h2 className="mt-3 text-sm font-semibold leading-snug">
+                {scenario.goal}
+              </h2>
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                {scenario.summary}
+              </p>
+              <div className="mt-4 text-xs text-foreground">
+                Gated: {Object.keys(scenario.gatedAssets).join(", ")}
+              </div>
+            </article>
+          ))}
         </section>
       </div>
     </main>

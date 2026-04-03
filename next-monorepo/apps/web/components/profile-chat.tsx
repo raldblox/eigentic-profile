@@ -13,6 +13,7 @@ import {
   PromptInputActions,
   PromptInputTextarea,
 } from "@workspace/ui/components/prompt-input"
+import type { DemoScenario } from "@/lib/demo-scenarios"
 
 type ChatMessage = {
   id: string
@@ -25,27 +26,28 @@ type ProfileSummary = {
   headline?: string | null
 }
 
-const seedMessages: ChatMessage[] = [
-  {
-    id: "seed-1",
-    role: "assistant",
-    content:
-      "Tell me what you are building and why this profile should unlock a next step.",
-  },
-]
-
 export function ProfileChat({
   profile,
   profileId,
   mode = "live",
   endpoint,
+  scenario,
 }: {
   profile: ProfileSummary
   profileId?: string
   mode?: "live" | "demo"
   endpoint?: string
+  scenario?: DemoScenario
 }) {
-  const [messages, setMessages] = useState<ChatMessage[]>(seedMessages)
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      id: "seed-1",
+      role: "assistant",
+      content:
+        scenario?.qualifierQuestion ??
+        "Tell me what you are building and why this profile should unlock access.",
+    },
+  ])
   const [input, setInput] = useState("")
   const [busy, setBusy] = useState(false)
 
@@ -91,6 +93,7 @@ export function ProfileChat({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          scenarioId: scenario?.id,
           messages: [...messages, nextMessage].map(({ role, content }) => ({
             role,
             content,
@@ -144,6 +147,21 @@ export function ProfileChat({
       <div className="px-6 pt-4">
         {profile.headline && (
           <p className="text-sm text-muted-foreground">{profile.headline}</p>
+        )}
+        {scenario && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            <span className="rounded-full border border-border px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+              {scenario.title}
+            </span>
+            {Object.keys(scenario.gatedAssets).map((asset) => (
+              <span
+                key={asset}
+                className="rounded-full border border-border px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                {asset}
+              </span>
+            ))}
+          </div>
         )}
       </div>
 

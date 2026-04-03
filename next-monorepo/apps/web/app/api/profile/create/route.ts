@@ -18,6 +18,10 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     (payload.displayName as string | undefined) ??
     (payload.name as string | undefined) ??
     "Anon"
+  const ownerLabel =
+    (payload.ownerLabel as string | undefined) ??
+    (payload.principal as string | undefined) ??
+    undefined
   const ownerWallet =
     request.headers.get("x402-payer") ??
     request.headers.get("x402-wallet") ??
@@ -29,10 +33,14 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     id = (await client.mutation((anyApi as any).profiles.create, {
       displayName,
       ownerWallet,
+      ownerLabel,
       headline: payload.headline,
       prompt: payload.prompt,
+      qualificationGoal: payload.qualificationGoal,
       intent: payload.intent,
       context: payload.context,
+      criteria: payload.criteria,
+      gatedAssets: payload.gatedAssets,
       accessRules: payload.accessRules,
       structuredData: payload.structuredData ?? payload.profile,
     })) as string
@@ -65,7 +73,7 @@ export const POST = withX402(
       {
         scheme: "exact",
         network: X402_CHAIN,
-        price: X402_PRICE || "$0.05",
+        price: X402_PRICE || "$0.01",
         payTo: X402_PAYTO_EVM,
       },
     ],

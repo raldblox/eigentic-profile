@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 
 import { getOpenAIClient, OPENAI_MODEL } from "@/lib/openai"
+import { buildQualificationPrompt } from "@/lib/qualification-prompt"
+import { getDemoScenario } from "@/lib/demo-scenarios"
 
 type ChatMessage = {
   role: "user" | "assistant"
@@ -9,6 +11,7 @@ type ChatMessage = {
 
 type ChatRequest = {
   messages: ChatMessage[]
+  scenarioId?: string
 }
 
 export async function POST(request: Request) {
@@ -26,14 +29,18 @@ export async function POST(request: Request) {
     )
   }
 
-  const systemPrompt = [
-    "You are the appointed representative for a listed profile.",
-    "Your job is to qualify visitors interested in autonomous agents and agentic workflows.",
-    "Keep responses short. Ask one qualifying question at a time.",
-    "If a message is unrelated, politely decline and redirect to the qualification.",
-    "Do NOT reveal the GitHub repo link unless the user clearly expresses interest in autonomous agents.",
-    "When they qualify, share the GitHub link and a brief next step.",
-  ].join("\n")
+  const scenario = getDemoScenario(payload.scenarioId ?? "autonomous-agents")
+  const systemPrompt = buildQualificationPrompt({
+    representativeName: "Eigen Demo Representative",
+    profileName: scenario.title,
+    ownerLabel: "the profile owner",
+    goal: scenario.goal,
+    summary: scenario.summary,
+    criteria: scenario.criteria,
+    gatedAssets: scenario.gatedAssets,
+    qualifierQuestion: scenario.qualifierQuestion,
+    successMessage: scenario.successMessage,
+  })
 
   const openai = getOpenAIClient()
   const response = await openai.responses.create({
@@ -41,7 +48,7 @@ export async function POST(request: Request) {
     input: [
       {
         role: "developer",
-        content: systemPrompt,
+        content: `${systemPrompt}\n\nThe visitor is using the demo scenario titled "${scenario.title}".`,
       },
       ...payload.messages.map((message) => ({
         role: message.role,

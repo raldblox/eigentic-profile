@@ -13,6 +13,7 @@ Key ideas:
 - A Convex-backed profile registry
 - Prompt or structured profile input
 - Public profile URLs with embedded qualification chat
+- Profile schema that can gate calendar links, email, phone, address, and GitHub access
 
 ## Demo flow (hackathon)
 
@@ -20,6 +21,15 @@ Key ideas:
 2. **POST** a prompt or structured profile object.
 3. **Receive** a public profile URL.
 4. **Open** the profile URL and chat with the profile agent to unlock access.
+
+## Demo scenarios
+
+These scenarios are shown in the homepage and demo page:
+- Autonomous Agent Builders
+- Founders Booking Demos
+- Qualified Sales Leads
+- Private Advisory Access
+- Recruiting and Hiring
 
 ## API surface
 
@@ -33,8 +43,10 @@ The profile owner wallet is derived from the wallet that pays the x402 request.
 Example body (prompt-first):
 ```json
 {
+  "ownerLabel": "Eigen Labs",
   "displayName": "Eigen",
   "headline": "Agentic founder profile",
+  "qualificationGoal": "Only schedule calls with founders over $20k MRR",
   "prompt": "Qualify builders who want an OWS demo."
 }
 ```
@@ -42,13 +54,21 @@ Example body (prompt-first):
 Example body (structured):
 ```json
 {
+  "ownerLabel": "Eigen Labs",
   "displayName": "Eigen",
   "headline": "Agentic founder profile",
-  "intent": "Only schedule calls with founders over $20k MRR",
-  "context": "We fund pre-seed infrastructure teams",
-  "accessRules": {
-    "requires": ["startup", "revenue"],
-    "minRevenue": 20000
+  "qualificationGoal": "Only schedule calls with founders over $20k MRR",
+  "intent": "We fund pre-seed infrastructure teams",
+  "context": "Only open the calendar after the founder proves fit.",
+  "criteria": [
+    "They are the founder or operator.",
+    "They have at least $20k MRR or a credible equivalent.",
+    "They want a private follow-up or demo."
+  ],
+  "gatedAssets": {
+    "calendarUrl": "https://cal.com/raldblox/eigentic-demo",
+    "email": "founders@eigentic.profile",
+    "githubUrl": "https://github.com/raldblox/eigentic-profile"
   }
 }
 ```

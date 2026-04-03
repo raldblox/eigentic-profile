@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 
 import { anyApi, getConvexClient } from "@/lib/convex"
 import { getOpenAIClient, OPENAI_MODEL } from "@/lib/openai"
+import { buildQualificationPrompt } from "@/lib/qualification-prompt"
 
 type ChatMessage = {
   role: "user" | "assistant"
@@ -41,18 +42,22 @@ export async function POST(
   }
 
   const systemPrompt = [
-    "You are the appointed representative for a listed profile.",
-    "Your job is to qualify visitors before unlocking any private next step.",
-    "Keep replies short, ask one qualifying question at a time.",
-    "If the user asks unrelated questions, decline briefly and redirect to the qualification.",
-    "Only approve visitors who match the intent and access rules.",
-    "",
-    `Profile name: ${profile.displayName}`,
-    profile.headline ? `Headline: ${profile.headline}` : null,
-    profile.intent ? `Intent: ${profile.intent}` : null,
-    profile.context ? `Context: ${profile.context}` : null,
+    buildQualificationPrompt({
+      representativeName: "Profile Representative",
+      profileName: profile.displayName,
+      ownerLabel: profile.ownerLabel ?? "the profile owner",
+      goal: profile.qualificationGoal ?? profile.intent ?? profile.headline,
+      summary: profile.context ?? profile.prompt ?? profile.headline,
+      criteria: profile.criteria ?? null,
+      gatedAssets: profile.gatedAssets ?? null,
+      qualifierQuestion:
+        profile.prompt ??
+        "What makes you the right visitor for this profile?",
+      successMessage:
+        "Great. You are qualified, and I can unlock the next step.",
+    }),
     profile.accessRules
-      ? `Access rules (structured): ${JSON.stringify(profile.accessRules)}`
+      ? `Additional access rules (structured): ${JSON.stringify(profile.accessRules)}`
       : null,
   ]
     .filter(Boolean)
