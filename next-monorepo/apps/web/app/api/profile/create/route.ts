@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { withX402 } from "@x402/next"
 
-import { api, getConvexClient } from "@/lib/convex"
+import { anyApi, getConvexClient } from "@/lib/convex"
 import { X402_CHAIN, X402_PAYTO_EVM, X402_PRICE, x402Server } from "@/lib/x402"
 
 type CreatePayload = Record<string, unknown>
@@ -24,7 +24,7 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     "unknown-wallet"
 
   const client = getConvexClient()
-  const id = (await client.mutation(api.profiles.create, {
+  const id = (await client.mutation((anyApi as any).profiles.create, {
     displayName,
     ownerWallet,
     headline: payload.headline,

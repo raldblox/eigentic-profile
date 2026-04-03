@@ -1,7 +1,7 @@
 import "server-only"
 
 import { ConvexHttpClient } from "convex/browser"
-import { api } from "../../../convex/_generated/api"
+import { anyApi } from "convex/server"
 
 export function getConvexClient() {
   const url = process.env.CONVEX_URL
@@ -11,4 +11,4 @@ export function getConvexClient() {
   return new ConvexHttpClient(url)
 }
 
-export { api }
+export { anyApi }
