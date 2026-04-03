@@ -59,11 +59,11 @@ export default function Page() {
             </div>
             <div className="mt-6 rounded-2xl border border-border bg-background px-4 py-5 text-xs leading-relaxed">
               <pre className="whitespace-pre-wrap text-[11px] leading-relaxed text-foreground">
-{`ows pay request "https://profile.boreal.work/api/create" \\
-  --wallet agent-wallet \\
+{`ows pay request "https://eigentic-profile.vercel.app/api/profile/create" \\
+  --wallet eigentti \\
   --method POST \\
   --body '{
-    "ownerLabel": "Eigen Labs",
+    "ownerLabel": "Eigentic Labs",
     "displayName": "Eigen",
     "headline": "Agentic founder profile",
     "qualificationGoal": "Only schedule calls with founders over $20k MRR",
