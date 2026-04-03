@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import util from "node:util"
 
-import { anyApi, getConvexClient } from "@/lib/convex"
+import { anyApi, getConvexClientWithDebug } from "@/lib/convex"
 
 type CreatePayload = Record<string, unknown>
 
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     origin,
   })
 
-  const client = getConvexClient()
+  const client = getConvexClientWithDebug(true)
   try {
     const id = (await client.mutation((anyApi as any).profiles.create, {
       displayName,
