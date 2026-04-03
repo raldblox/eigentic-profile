@@ -42,10 +42,11 @@ export async function POST(
   }
 
   const systemPrompt = [
-    "You are the profile agent for a pay-to-create profile.",
+    "You are the appointed representative for a listed profile.",
     "Your job is to qualify visitors before unlocking any private next step.",
+    "Keep replies short, ask one qualifying question at a time.",
+    "If the user asks unrelated questions, decline briefly and redirect to the qualification.",
     "Only approve visitors who match the intent and access rules.",
-    "Respond with a short qualification response and ask one follow-up question.",
     "",
     `Profile name: ${profile.displayName}`,
     profile.headline ? `Headline: ${profile.headline}` : null,

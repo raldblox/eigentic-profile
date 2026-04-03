@@ -23,21 +23,21 @@ export default function Page() {
             </div>
             <div className="flex flex-col gap-4">
               <h1 className="text-4xl font-semibold leading-tight md:text-5xl">
-                Pay-to-create agent profiles that qualify before they unlock.
+                Pay-to-create profiles that qualify before they unlock access.
               </h1>
               <p className="max-w-xl text-base text-muted-foreground md:text-lg">
-                Create a gated profile in a single paid request. The agent
-                screens visitors, then reveals the next step only to qualified
-                access.
+                Submit one paid request to mint a public profile. The embedded
+                agent qualifies visitors and reveals private next steps only
+                when intent matches.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <Button asChild>
-                <Link href="/demo-profile">Demo profile</Link>
+                <Link href="/demo-profile">View demo profile</Link>
               </Button>
               <Button variant="outline" asChild>
                 <a href="https://docs.openwallet.sh/doc.html?slug=quickstart">
-                  Setup OWS
+                  Set up OWS
                 </a>
               </Button>
             </div>

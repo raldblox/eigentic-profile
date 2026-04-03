@@ -10,7 +10,8 @@ export default function DemoProfilePage() {
         <ProfileChat
           profile={{
             displayName: "Eigen Demo",
-            headline: "Qualify builders before sharing a private invite.",
+            headline:
+              "Access is reserved for teams building autonomous agent workflows.",
           }}
           mode="live"
           endpoint="/api/demo/chat"
