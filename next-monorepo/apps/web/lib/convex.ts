@@ -1,6 +1,7 @@
 import "server-only"
 
 import { ConvexHttpClient } from "convex/browser"
+import { version } from "convex"
 import { convexToJson, jsonToConvex, type JSONValue } from "convex/values"
 import { anyApi } from "convex/server"
 
@@ -63,7 +64,7 @@ export async function runConvexMutation<T>(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Convex-Client": "npm-local-debug",
+      "Convex-Client": `npm-${version}`,
     },
     body,
   })
