@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import util from "node:util"
 import { withX402 } from "@x402/next"
 
-import { anyApi, getConvexClient } from "@/lib/convex"
+import { runConvexMutation } from "@/lib/convex"
 import { X402_CHAIN, X402_PAYTO_EVM, X402_PRICE, x402Server } from "@/lib/x402"
 
 type CreatePayload = Record<string, unknown>
@@ -80,7 +80,6 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     request.headers.get("x402-wallet") ??
     "unknown-wallet"
 
-  const client = getConvexClient()
   const origin = request.headers.get("origin") ?? new URL(request.url).origin
   const diagnostics = buildDiagnostics({
     payload,
@@ -92,7 +91,7 @@ async function handler(request: NextRequest): Promise<NextResponse> {
 
   let id: string
   try {
-      id = (await client.mutation((anyApi as any).profiles.create, {
+    id = await runConvexMutation<string>("profiles:create", {
       displayName,
       ownerWallet,
       ownerLabel,
@@ -105,7 +104,7 @@ async function handler(request: NextRequest): Promise<NextResponse> {
       gatedAssets: payload.gatedAssets,
       accessRules: payload.accessRules,
       structuredData: payload.structuredData ?? payload.profile,
-    })) as string
+    })
   } catch (error) {
     const ownKeys =
       error && typeof error === "object"
@@ -143,7 +142,7 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     )
   }
 
-  const profileUrl = `${origin}/${id}`
+  const profileUrl = `${origin}/profile/${id}`
 
   return NextResponse.json({
     id,

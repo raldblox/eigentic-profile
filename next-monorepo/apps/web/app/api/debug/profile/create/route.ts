@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import util from "node:util"
 
-import { anyApi, getConvexClientWithDebug } from "@/lib/convex"
+import { runConvexMutation } from "@/lib/convex"
 
 type CreatePayload = Record<string, unknown>
 
@@ -76,9 +76,10 @@ export async function POST(request: NextRequest) {
     origin,
   })
 
-  const client = getConvexClientWithDebug(true)
   try {
-    const id = (await client.mutation((anyApi as any).profiles.create, {
+    const id = await runConvexMutation<string>(
+      "profiles:create",
+      {
       displayName,
       ownerWallet,
       ownerLabel,
@@ -91,33 +92,31 @@ export async function POST(request: NextRequest) {
       gatedAssets: payload.gatedAssets,
       accessRules: payload.accessRules,
       structuredData: payload.structuredData ?? payload.profile,
-    })) as string
+      },
+      { debugHttp: true },
+    )
 
     return NextResponse.json({
       id,
-      profileUrl: `${origin}/${id}`,
+      profileUrl: `${origin}/profile/${id}`,
       status: "created",
       diagnostics,
     })
   } catch (error) {
-    const ownKeys =
-      error && typeof error === "object"
-        ? Reflect.ownKeys(error).map((key) => String(key))
-        : []
-    const fullInspect =
-      error && typeof error === "object"
-        ? util.inspect(error, { depth: 5, breakLength: 120, showHidden: true })
-        : String(error)
     const errorDetails = {
       name: error instanceof Error ? error.name : undefined,
       message: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
+      error_json: JSON.stringify(error),
       constructorName:
         error && typeof error === "object" && "constructor" in error
           ? (error as { constructor?: { name?: string } }).constructor?.name
           : undefined,
-      ownKeys,
-      inspect: fullInspect,
+      ownKeys:
+        error && typeof error === "object"
+          ? Reflect.ownKeys(error).map((key) => String(key))
+          : [],
+      inspect: util.inspect(error, { depth: 5, breakLength: 120, showHidden: true }),
       data:
         typeof error === "object" && error !== null
           ? (error as { data?: unknown }).data
