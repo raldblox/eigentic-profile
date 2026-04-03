@@ -12,7 +12,8 @@ export default function DemoProfilePage() {
             displayName: "Eigen Demo",
             headline: "Qualify builders before sharing a private invite.",
           }}
-          mode="demo"
+          mode="live"
+          endpoint="/api/demo/chat"
         />
       </div>
     </main>

@@ -28,17 +28,19 @@ export function ProfileChat({
   profile,
   profileId,
   mode = "live",
+  endpoint,
 }: {
   profile: ProfileSummary
   profileId?: string
   mode?: "live" | "demo"
+  endpoint?: string
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>(seedMessages)
   const [input, setInput] = useState("")
   const [busy, setBusy] = useState(false)
 
   const canSend = useMemo(
-    () => input.trim().length > 3 && !busy,
+    () => input.trim().length > 0 && !busy,
     [input, busy],
   )
 
@@ -55,7 +57,7 @@ export function ProfileChat({
     setInput("")
     setBusy(true)
 
-    if (mode === "demo" || !profileId) {
+    if (mode === "demo" && !endpoint) {
       await new Promise((resolve) => setTimeout(resolve, 650))
       const response: ChatMessage = {
         id: `assistant-${Date.now()}`,
@@ -69,7 +71,13 @@ export function ProfileChat({
     }
 
     try {
-      const response = await fetch(`/api/profile/${profileId}/chat`, {
+      const target =
+        endpoint ?? (profileId ? `/api/profile/${profileId}/chat` : null)
+      if (!target) {
+        throw new Error("Missing chat endpoint")
+      }
+
+      const response = await fetch(target, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -109,48 +117,69 @@ export function ProfileChat({
   }
 
   return (
-    <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
-      <div className="flex flex-col gap-2">
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          Profile Agent
-        </p>
-        <h2 className="text-xl font-semibold">{profile.displayName}</h2>
+    <div className="rounded-3xl border border-border bg-card">
+      <div className="flex items-center justify-between border-b border-border px-6 py-4">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+          <div>
+            <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+              Profile Agent
+            </div>
+            <h2 className="text-lg font-semibold">{profile.displayName}</h2>
+          </div>
+        </div>
+        <div className="text-xs text-muted-foreground">x402 • qualified</div>
+      </div>
+
+      <div className="px-6 pt-4">
         {profile.headline && (
           <p className="text-sm text-muted-foreground">{profile.headline}</p>
         )}
       </div>
-      <div className="mt-6 flex min-h-[280px] flex-col gap-4 rounded-2xl border border-border bg-background/60 p-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-              message.role === "user"
-                ? "self-end bg-primary text-primary-foreground"
-                : "self-start bg-muted text-foreground"
-            }`}
-          >
-            {message.content}
-          </div>
-        ))}
-        {busy && (
-          <div className="text-xs text-muted-foreground">Thinking...</div>
-        )}
+
+      <div className="px-6 pb-6 pt-4">
+        <div className="flex min-h-[320px] flex-col gap-4 rounded-2xl border border-border bg-background p-4">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`max-w-[80%] rounded-2xl border border-border px-4 py-3 text-sm leading-relaxed ${
+                message.role === "user"
+                  ? "self-end bg-muted text-foreground"
+                  : "self-start bg-card text-foreground"
+              }`}
+            >
+              {message.content}
+            </div>
+          ))}
+          {busy && (
+            <div className="text-xs text-muted-foreground">Thinking...</div>
+          )}
+        </div>
       </div>
-      <div className="mt-4 flex flex-col gap-3">
-        <textarea
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          rows={3}
-          placeholder="Explain your intent, proof, and why you qualify."
-          className="w-full resize-none rounded-2xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
-        />
-        <div className="flex items-center gap-3">
-          <Button onClick={onSend} disabled={!canSend}>
-            {busy ? "Reviewing..." : "Send qualification"}
-          </Button>
-          <span className="text-xs text-muted-foreground">
-            Connect OpenAI here to make the agent enforce real rules.
-          </span>
+
+      <div className="border-t border-border px-6 py-4">
+        <div className="flex flex-col gap-3">
+          <textarea
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault()
+                void onSend()
+              }
+            }}
+            rows={3}
+            placeholder="Explain your intent, proof, and why you qualify."
+            className="w-full resize-none rounded-2xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+          />
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <Button onClick={onSend} disabled={!canSend}>
+              {busy ? "Reviewing..." : "Send qualification"}
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              The agent will only reveal the next step when you qualify.
+            </span>
+          </div>
         </div>
       </div>
     </div>

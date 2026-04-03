@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
 
-import { anyApi, getConvexClient } from "@/lib/convex"
+import { api, getConvexClient } from "@/lib/convex"
 import { getOpenAIClient, OPENAI_MODEL } from "@/lib/openai"
+import type { Id } from "@convex/_generated/dataModel"
 
 type ChatMessage = {
   role: "user" | "assistant"
@@ -31,8 +32,8 @@ export async function POST(
   }
 
   const client = getConvexClient()
-  const profile = await client.query(anyApi.profiles.get, {
-    id: params.id,
+  const profile = await client.query(api.profiles.get, {
+    id: params.id as Id<"profiles">,
   })
 
   if (!profile) {

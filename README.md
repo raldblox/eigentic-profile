@@ -28,11 +28,11 @@ Key ideas:
 `POST /api/profile/create`
 
 If payment is missing, the API responds with `402` and includes the facilitator and price in the response.
+The profile owner wallet is derived from the wallet that pays the x402 request.
 
 Example body (prompt-first):
 ```json
 {
-  "agentWallet": "agent-treasury",
   "displayName": "Eigen",
   "headline": "Agentic founder profile",
   "prompt": "Qualify builders who want an OWS demo."
@@ -42,7 +42,6 @@ Example body (prompt-first):
 Example body (structured):
 ```json
 {
-  "agentWallet": "agent-treasury",
   "displayName": "Eigen",
   "headline": "Agentic founder profile",
   "intent": "Only schedule calls with founders over $20k MRR",

@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation"
 
 import { ProfileChat } from "@/components/profile-chat"
-import { anyApi, getConvexClient } from "@/lib/convex"
+import { api, getConvexClient } from "@/lib/convex"
+import type { Id } from "@convex/_generated/dataModel"
 
 export const dynamic = "force-dynamic"
 
@@ -23,8 +24,8 @@ export default async function ProfilePage({
   params: { id: string }
 }) {
   const client = getConvexClient()
-  const profile = (await client.query(anyApi.profiles.get, {
-    id: params.id,
+  const profile = (await client.query(api.profiles.get, {
+    id: params.id as Id<"profiles">,
   })) as ProfileDoc | null
 
   if (!profile) {

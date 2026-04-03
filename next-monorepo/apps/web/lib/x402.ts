@@ -11,5 +11,8 @@ export const x402Server = new x402ResourceServer(
 ).register("eip155:*", new ExactEvmScheme())
 
 export const X402_PRICE = process.env.X402_PRICE ?? "$0.05"
-export const X402_CHAIN = process.env.X402_CHAIN ?? "eip155:8453"
+type Network = `${string}:${string}`
+
+export const X402_CHAIN = (process.env.X402_CHAIN ??
+  "eip155:8453") as Network
 export const X402_PAYTO_EVM = process.env.X402_PAYTO_EVM ?? ""

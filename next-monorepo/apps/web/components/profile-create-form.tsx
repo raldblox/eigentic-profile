@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react"
 
 import { Button } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
 
 type CreateResponse = {
   id: string
@@ -30,7 +31,17 @@ const sampleStructured = `{
   }
 }`
 
-export function ProfileCreateForm() {
+export function ProfileCreateForm({
+  className,
+  title = "Pay-to-create profile payload",
+  description = "Paste a prompt or structured profile payload. The create route returns a public profile URL.",
+  showHeader = true,
+}: {
+  className?: string
+  title?: string
+  description?: string
+  showHeader?: boolean
+}) {
   const [pending, startTransition] = useTransition()
   const [payload, setPayload] = useState(sampleStructured)
   const [result, setResult] = useState<CreateResponse | null>(null)
@@ -82,18 +93,22 @@ export function ProfileCreateForm() {
   }
 
   return (
-    <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
-      <div className="flex flex-col gap-2">
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          Create Profile (x402)
-        </p>
-        <h3 className="text-lg font-semibold">Pay-to-create profile payload</h3>
-        <p className="text-sm text-muted-foreground">
-          Paste a prompt or structured profile payload. The create route returns
-          a public profile URL.
-        </p>
-      </div>
-      <div className="mt-4 flex flex-col gap-4">
+    <div
+      className={cn(
+        "rounded-3xl border border-border bg-card p-6",
+        className,
+      )}
+    >
+      {showHeader && (
+        <div className="flex flex-col gap-2">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Create Profile (x402)
+          </p>
+          <h3 className="text-lg font-semibold">{title}</h3>
+          <p className="text-sm text-muted-foreground">{description}</p>
+        </div>
+      )}
+      <div className={cn("flex flex-col gap-4", showHeader ? "mt-4" : "mt-0")}>
         <textarea
           value={payload}
           onChange={(event) => setPayload(event.target.value)}

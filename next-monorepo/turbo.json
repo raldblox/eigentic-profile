@@ -8,7 +8,16 @@
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "env": [
+        "CONVEX_URL",
+        "OPENAI_API_KEY",
+        "OPENAI_MODEL",
+        "X402_FACILITATOR_URL",
+        "X402_PRICE",
+        "X402_CHAIN",
+        "X402_PAYTO_EVM"
+      ]
     },
     "format": {
       "dependsOn": ["^format"]
