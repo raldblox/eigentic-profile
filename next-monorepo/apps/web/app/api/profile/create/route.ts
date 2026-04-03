@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import util from "node:util"
 import { withX402 } from "@x402/next"
 
-import { api, getConvexClient } from "@/lib/convex"
+import { anyApi, getConvexClient } from "@/lib/convex"
 import { X402_CHAIN, X402_PAYTO_EVM, X402_PRICE, x402Server } from "@/lib/x402"
 
 type CreatePayload = Record<string, unknown>
@@ -92,7 +92,7 @@ async function handler(request: NextRequest): Promise<NextResponse> {
 
   let id: string
   try {
-    id = (await client.mutation(api.profiles.create, {
+      id = (await client.mutation((anyApi as any).profiles.create, {
       displayName,
       ownerWallet,
       ownerLabel,
