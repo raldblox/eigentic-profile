@@ -24,16 +24,29 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     "unknown-wallet"
 
   const client = getConvexClient()
-  const id = (await client.mutation((anyApi as any).profiles.create, {
-    displayName,
-    ownerWallet,
-    headline: payload.headline,
-    prompt: payload.prompt,
-    intent: payload.intent,
-    context: payload.context,
-    accessRules: payload.accessRules,
-    structuredData: payload.structuredData ?? payload.profile,
-  })) as string
+  let id: string
+  try {
+    id = (await client.mutation((anyApi as any).profiles.create, {
+      displayName,
+      ownerWallet,
+      headline: payload.headline,
+      prompt: payload.prompt,
+      intent: payload.intent,
+      context: payload.context,
+      accessRules: payload.accessRules,
+      structuredData: payload.structuredData ?? payload.profile,
+    })) as string
+  } catch (error) {
+    console.error("Convex mutation failed", error)
+    return NextResponse.json(
+      {
+        error: "Profile creation failed",
+        details:
+          error instanceof Error ? error.message : "Unknown Convex error",
+      },
+      { status: 500 },
+    )
+  }
 
   const origin = request.headers.get("origin") ?? new URL(request.url).origin
   const profileUrl = `${origin}/${id}`
