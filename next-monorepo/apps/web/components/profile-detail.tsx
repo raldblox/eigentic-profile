@@ -7,6 +7,10 @@ type ProfileDoc = {
   prompt?: string | null
   intent?: string | null
   context?: string | null
+  ownerLabel?: string | null
+  qualificationGoal?: string | null
+  criteria?: string[] | null
+  gatedAssets?: unknown
   accessRules?: unknown
   structuredData?: unknown
   ownerWallet: string
